@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+      body {
+        text-align: center;
+      }
+      .box {
+          margin-left: 800px;
+      }
+      #sourceObject,#aimObject {
+          float: left;
+          padding: 10px;
+          margin: 15px;
+      }
+      #sourceObject {
+          background-color: #DFD7D7;
+          width: 75px;
+          height: 70px;
+      }
+      #aimObject {
+          background-color: #A347FF;
+          width: 150px;
+          height: 150px;
+      }
+    </style>
+    <script>
+       // 开始拖放
+        function dragStart(event) {
+            // 设置允许发生的拖放行为
+            event.dataTransfer.effectAllowed = 'copy';
+            // 利用 dataTransfer 存储 拖放对象的 id
+            event.dataTransfer.setData("Text",event.target.id);
+            document.querySelector("#status").innerHTML = "开始拖动"
+        }
+        // 拖放中
+        function drag(event) {
+            document.querySelector("#status").innerHTML = "拖动中..."
+        }
+        // 拖放结束
+        function dragEnd(event) {
+            document.querySelector("#status").innerHTML = "拖动结束"
+        }
+        // 拖放进入目标元素
+        function dragEnter(event) {
+            // 屏蔽元素的默认行为  否则 drop 事件可能不会被触发
+            event.preventDefault();
+            document.querySelector("#status").innerHTML = "进入目标区域"
+        }
+        // 拖放在目标元素内移动
+        function dragOver(event) {
+            // 屏蔽元素的默认行为  否则 drop 事件可能不会被触发
+            event.preventDefault();
+            // 设置拖放操作的实际行为
+            event.dataTransfer.dropEffect = "copy";
+            document.querySelector("#status").innerHTML = "在目标区域移动"
+        }
+        // 拖放离开目标元素
+        function dragLeave(event) {
+            document.querySelector("#status").innerHTML = "离开目标区域"
+        }
+        // 将拖放元素放置到目标元素中
+        function drop(event) {
+            // 屏蔽元素的默认行为  否则 drop 事件可能不会被触发
+            event.preventDefault();
+            // 读取 dataTransfer 对象中的数据
+            var data = event.dataTransfer.getData("Text");
+            // 将 拖放对象 加入到 目标元素中
+            event.target.appendChild(document.getElementById(data))
+            document.getElementById(data).innerHTML = "废弃文件"
+            document.querySelector("#status").innerHTML = "在目标区域放下拖动对象"
+        }
+    </script>
+</head>
+<body>
+    <h1>Search Results</h1>
+
+    <form method="POST" action="{% url 'search_datasets' %}">
+        <label for="keyword">Keyword:</label>
+        <input type="text" name="keyword">
+        <button type="submit">Download</button>
+    </form>
+
+
+
+<h2>HTML5拖放</h2>
+<div id="status">状态监控中</div>
+<div class="box">
+    <div id="aimObject" ondragover="dragOver(event)" ondrop="drop(event)" ondragleave="dragLeave(event)" ondragenter="dragEnter(event)">
+        <p>回收站</p>
+    </div>
+    <div id="sourceObject" draggable="true" ondrag="drag(event)" ondragstart="dragStart(event)" ondragend="dragEnd(event)">
+        <p>待删除文件</p>
+    </div>
+</div>
+
+</body>
+</html>

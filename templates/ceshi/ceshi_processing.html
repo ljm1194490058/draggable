@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Preprocessing Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <h1>Data Preprocessing Visualization</h1>
+    <div>
+      <label for="data">Input data:</label><br />
+      <textarea id="data" cols="50" rows="10">1.0,2.0,3.0
+4.0,5.0,6.0
+7.0,8.0,9.0
+10.0,11.0,12.0
+13.0,14.0,15.0
+16.0,17.0,18.0
+19.0,20.0,21.0
+22.0,23.0,24.0
+25.0,26.0,27.0
+28.0,29.0,30.0</textarea>
+    </div>
+    <hr />
+    <h2>Outliers</h2>
+    <div>
+      <label for="outlier-threshold">Threshold:</label>
+      <input type="number" id="outlier-threshold" value="3" step="0.1" /><br />
+      <button onclick="handleOutliers()">Apply</button>
+    </div>
+    <div id="outlier-plot"></div>
+    <hr />
+    <h2>Missing Values</h2>
+    <button onclick="handleMissing()">Replace with Mean</button>
+    <button onclick="handleMissing()">Replace with Median</button>
+    <hr />
+    <h2>Numerical Encoding</h2>
+    <button onclick="handleNumerical()">One-Hot Encoding</button>
+    <button onclick="handleNumerical()">Label Encoding</button>
+    <hr />
+    <h2>Normalization</h2>
+    <button onclick="handleNormalization()">Min-Max Scaling</button>
+    <button onclick="handleNormalization()">Z-Score Scaling</button>
+  </body>
+  <script>
+    // Plotting function for outliers
+    function plotOutliers(data) {
+      const trace = {
+        x: data,
+        type: 'box'
+      };
+      const layout = {
+        title: 'Boxplot for Outlier Detection'
+      };
+      Plotly.newPlot('outlier-plot', [trace], layout);
+    }
+
+    // Function to handle outlier processing
+    function handleOutliers() {
+      const threshold = document.getElementById('outlier-threshold').value;
+      // Process the data and update the plot
+      const data = processData();
+      plotOutliers(data);
+    }
+
+    // Function to handle missing value processing
+    function handleMissing(strategy) {
+      // Process the data and update the view
+      const data = processData();
+      if (strategy === 'mean') {
+        // Replace missing values with mean
+        for (let i = 0; i < data.length; i++) {
+          for (let j = 0; j < data[i].length; j++) {
+            if (isNaN(data[i][j])) {
+              let sum = 0;
+              let count = 0;
+              for (let k = 0; k < data.length; k++) {
+                if (!isNaN(data[k][j])) {
+                  sum += data[k][j];
+                  count++;
+                }
+              }
+              const mean = sum / count;
+              data[i][j] = mean;
+            }
+          }
+        }
+      } else if (strategy === 'median') {
+        // Replace missing values with median
+        for (let i = 0; i < data.length; i++) {
+          for (let j = 0; j < data[i].length; j++) {
+            if (isNaN(data[i][j])) {
+              let col = [];
+              for (let k = 0; k < data.length; k++) {
+                if (!isNaN(data[k][j])) {
+                  col.push(data[k][j]);
+                }
+              }
+              col.sort((a, b) => a - b);
+              const mid = Math.floor(col.length/ 2);
+const median = col.length % 2 === 0 ?
+(col[mid - 1] + col[mid]) / 2 :
+col[mid];
+data[i][j] = median;
+}
+}
+}
+}
+updateTable(data);
+}
+
+
+    // Function to handle numerical encoding processing
+    function handleNumerical() {
+      // Process the data and update the view
+      const data = processData();
+    }
+
+    // Function to handle normalization processing
+    function handleNormalization() {
+      // Process the data and update the view
+      const data = processData();
+    }
+
+    // Helper function to process the input data
+    function processData() {
+      const rawData = document.getElementById('data').value.split('\n');
+      // Process the data according to the selected options
+      const processedData = rawData.map(row => row.split(',').map(Number));
+      return processedData;
+    }
+
+    // Helper function to update the table with new data
+    // Helper function to update the table with new data
+function updateTable(data) {
+  const table = document.createElement('table');
+  for (let j = 0; j < data[0].length; j++) {
+  let sum = 0, count = 0;
+  for (let i = 0; i < data.length; i++) {
+    if (!isNaN(data[i][j])) {
+      sum += data[i][j];
+      count++;
+    }
+  }
+  const mean = sum / count;
+  for (let i = 0; i < data.length; i++) {
+    if (isNaN(data[i][j])) {
+      data[i][j] = mean;
+    }
+  }
+}
+  const oldTable = document.getElementsByTagName('table')[0];
+  if (oldTable && oldTable.parentNode) {
+    oldTable.parentNode.replaceChild(table, oldTable);
+  } else {
+    document.body.appendChild(table);
+  }
+}
+
+  </script>
+</html>

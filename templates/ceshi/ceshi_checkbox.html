@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Checkbox Form Example</title>
+	<script type="text/javascript">
+		function validateForm() {
+			var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+			if (checkboxes.length != 2) {
+				alert("Please select exactly two options before submitting.");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</head>
+<body>
+	<form onsubmit="return validateForm()">
+		<label><input type="checkbox" name="option1" value="Option 1"> Option 1</label><br>
+		<label><input type="checkbox" name="option2" value="Option 2"> Option 2</label><br>
+		<label><input type="checkbox" name="option3" value="Option 3"> Option 3</label><br>
+		<label><input type="checkbox" name="option4" value="Option 4"> Option 4</label><br>
+		<input type="submit" value="Submit">
+	</form>
+</body>
+</html>

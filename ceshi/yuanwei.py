@@ -1,6 +1,9 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import itertools
+import matplotlib.pyplot as plt
+from scipy.stats import f_oneway
+
 
 def remove_outliers(df, columns):
     # 移除异常值，使用3倍标准差法
@@ -115,6 +118,36 @@ def iris_data_summary(file_path):
     # outliers = ((df < lower_bound) | (df > upper_bound)).sum().sum()
     # print('异常值数量:', outliers)
 # 加载数据集
+
+import seaborn as sns
+import pandas as pd
+
+# 加载鸢尾花数据集
+iris = sns.load_dataset("iris")
+
+# 绘制萼片长度的密度图
+sns.distplot(iris["sepal_length"])
+plt.show()
+
+grouped_data = iris.groupby("species")
+
+# 提取需要比较的特征
+feature_to_compare = "petal_length"
+
+# 将各组数据分别存储为DataFrame
+setosa_data = grouped_data.get_group("setosa")[feature_to_compare]
+versicolor_data = grouped_data.get_group("versicolor")[feature_to_compare]
+virginica_data = grouped_data.get_group("virginica")[feature_to_compare]
+
+# 进行方差分析
+f_value, p_value = f_oneway(setosa_data, versicolor_data, virginica_data)
+
+# 输出结果
+print("F-value:", f_value)
+print("p-value:", p_value)
+exit(0)
+import pandas as pd
+
 import numpy as np
 df = pd.read_csv('./iris.csv')
 all_int_list = []

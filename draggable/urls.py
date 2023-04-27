@@ -29,7 +29,10 @@ urlpatterns = [
     path('media/<str:filename>/', views.download_file, name='download_file'),
     path('line_chart/', views.line_chart, name = 'line_chart'),
     path('sandian/',views.sandian, name = 'sandian'),
-    path('base/', views.base, name='base'),
     path('child/', views.child, name='child'),
+    path('upload_process/', views.upload_process, name='upload_process'),
+    path('data_analytics/', views.data_analytics, name='data_analytics'),
+
+
 
 ]

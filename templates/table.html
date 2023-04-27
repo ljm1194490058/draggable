@@ -50,40 +50,34 @@
 
     	<div class="sidebar-wrapper">
             <div class="logo">
-                <a href="http://www.creative-tim.com" class="simple-text">
-                    Creative Tim
+                <a href="#" class="simple-text">
+                    可拖拽数据分析平台
                 </a>
             </div>
 
             <ul class="nav">
-                <li>
-                    <a href="/line_chart">
-                        <i class="pe-7s-graph"></i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="user.html">
-                        <i class="pe-7s-user"></i>
-                        <p>User Profile</p>
-                    </a>
-                </li>
                 <li class="active">
-                    <a href="table.html">
+                    <a href="/upload/">
                         <i class="pe-7s-note2"></i>
-                        <p>Table List</p>
+                        <p style="font-size: 16px">数 据 预 览</p>
                     </a>
                 </li>
                 <li>
-                    <a href="typography.html">
+                    <a href="/line_chart/">
+                        <i class="pe-7s-graph"></i>
+                        <p style="font-size: 16px">数 据 图 像 展 示</p>
+                    </a>
+                </li>
+                <li >
+                    <a href="/child/">
                         <i class="pe-7s-news-paper"></i>
-                        <p>Typography</p>
+                        <p style="font-size: 16px">数 据 预 处 理</p>
                     </a>
                 </li>
                 <li>
-                    <a href="icons.html">
+                    <a href="/data_analytics/">
                         <i class="pe-7s-science"></i>
-                        <p>Icons</p>
+                        <p style="font-size: 16px">数 据 分 析</p>
                     </a>
                 </li>
                 <li>
@@ -110,6 +104,7 @@
 
     <div class="main-panel">
         <!-- 头部 -->
+		<!-- 头部 -->
 		<nav class="navbar navbar-default navbar-fixed">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -132,60 +127,29 @@
                         <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-globe"></i>
-                                    <b class="caret hidden-sm hidden-xs"></b>
-                                    <span class="notification hidden-sm hidden-xs">5</span>
+{#                                    <b class="caret hidden-sm hidden-xs"></b>#}
+{#                                    <span class="notification hidden-sm hidden-xs">5</span>#}
 									<p class="hidden-lg hidden-md">
-										5 Notifications
-										<b class="caret"></b>
+{#										0 Notifications#}
+{#										<b class="caret"></b>#}
 									</p>
                               </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">Notification 1</a></li>
-                                <li><a href="#">Notification 2</a></li>
-                                <li><a href="#">Notification 3</a></li>
-                                <li><a href="#">Notification 4</a></li>
-                                <li><a href="#">Another notification</a></li>
-                              </ul>
+{#                              <ul class="dropdown-menu">#}
+{#                                <li><a href="#">Notification 1</a></li>#}
+{#                                <li><a href="#">Notification 2</a></li>#}
+{#                                <li><a href="#">Notification 3</a></li>#}
+{#                                <li><a href="#">Notification 4</a></li>#}
+{#                                <li><a href="#">Another notification</a></li>#}
+{#                              </ul>#}
                         </li>
                         <li>
-                           <a href="">
+                           <a href="#">
                                 <i class="fa fa-search"></i>
 								<p class="hidden-lg hidden-md">Search</p>
                             </a>
                         </li>
                     </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                           <a href="">
-                               <p>Account</p>
-                            </a>
-                        </li>
-                        <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <p>
-										Dropdown
-										<b class="caret"></b>
-									</p>
-
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                              </ul>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <p>Log out</p>
-                            </a>
-                        </li>
-						<li class="separator hidden-lg hidden-md"></li>
-                    </ul>
                 </div>
             </div>
         </nav>
@@ -194,11 +158,10 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
-                    {% block content %}
                     <div class="col-md-12">
                         <div class="card">
 
-                            <form method="post" enctype="multipart/form-data" action="/upload/">
+                            <form method="post" enctype="multipart/form-data" action="/upload/" onsubmit="return checkFileName();">
                                 {% csrf_token %}
                                 <div class="form-inputs">
                                     <input type="file" name="file" style="margin-top: 5px; margin-left: 5px; border: 1px solid darkgrey;color: white;padding: 10px;text-align: center;text-decoration: none;" onchange="displayFileName(this)">
@@ -207,6 +170,15 @@
                                     function displayFileName(input) {
                                       var filename = input.files[0].name;
                                       document.getElementById("filename").innerHTML = filename;
+                                    }
+
+                                    function checkFileName() {
+                                        var span = document.getElementById("filename");
+                                        if (span.innerHTML === "") {
+                                            alert("请先选择要上传的文件！");
+                                            return false;
+                                        }
+                                        return true;
                                     }
                                     </script>
                                     <input type="submit" value="上传该文件" style="margin-top: 5px; border: none;color: white;padding: 8px;text-align: center;text-decoration: none;background-color: #9368e9;font-size: 14px;cursor: pointer;">
@@ -217,19 +189,18 @@
                             <div class="header">
                                 <h4 class="title">{{ file_title }}数据集: {{ data_shape }}</h4>
                                 <br>
-                                <p class="category">仅展示前五行数据</p>
                             </div>
 
-                            <div class="content table-responsive table-full-width" >
-                                <table class="table table-hover table-striped" border="1" style="border-color: #9A9A9A">
-                                    <thead>
+                             <div id="table-container" style="height: 400px; overflow-y: scroll;">
+                                <table class="table table-bordered table-striped">
+                                  <thead>
                                     <tr>
-                                    {% for col in columns %}
-                                        <th>{{ col }}</th>
-                                    {% endfor %}
+                                      {% for col in columns %}
+                                      <th>{{ col }}</th>
+                                      {% endfor %}
                                     </tr>
-                                    </thead>
-                                    <tbody>
+                                  </thead>
+                                  <tbody>
                                     {% for row in values %}
                                     <tr>
                                         {% for cell in row %}
@@ -237,17 +208,42 @@
                                         {% endfor %}
                                     </tr>
                                     {% endfor %}
-                                    </tbody>
+                                  </tbody>
                                 </table>
+                              </div>
 
+                              <div id="scrollbar" style="position: absolute; top: 70px; right: 0; bottom: 0; width: 20px;">
+                                <div class="ui-slider-handle"></div>
+                              </div>
                             </div>
+
+                            <script>
+                              $(function() {
+                                var container = $("#table-container");
+                                var scrollbar = $("#scrollbar");
+
+                                scrollbar.slider({
+                                  orientation: "vertical",
+                                  range: "min",
+                                  min: 0,
+                                  max: (container.get(0).scrollHeight - container.height()),
+                                  value: 0,
+                                  slide: function(event, ui) {
+                                    container.scrollTop(ui.value);
+                                  }
+                                });
+
+                                container.on("scroll", function() {
+                                  scrollbar.slider("value", container.scrollTop());
+                                });
+                              });
+                            </script>
 
 
                         </div>
                     </div>
-                    {% endblock %}
 
-                    {% block tongji %}
+
                     <div class="col-md-12">
                         <div class="card card-plain">
                             <div class="header">
@@ -319,49 +315,18 @@
                             </div>
                         </div>
                     </div>
-                    {% endblock %}
 
 
                         <!-- 下载文件 -->
-                        {% if file_url %}
-                            <br><br>
-                            <h3>已上传的文件:</h3>
-                            <a href="{{ file_url }}" target="_blank">下载</a>
-                        {% endif %}
+{#                        {% if file_url %}#}
+{#                            <br><br>#}
+{#                            <h3>已上传的文件:</h3>#}
+{#                            <a href="{{ file_url }}" target="_blank">下载</a>#}
+{#                        {% endif %}#}
                 </div>
             </div>
         </div>
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul>
-                        <li>
-                            <a href="#">
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Company
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Portfolio
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                               Blog
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <p class="copyright pull-right">
-                    &copy; <script>document.write(new Date().getFullYear())</script> <a href="http://www.creative-tim.com">Creative Tim</a>, made with love for a better web
-                </p>
-            </div>
-        </footer>
+
 
 
     </div>

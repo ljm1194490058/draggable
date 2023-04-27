@@ -1,6 +1,33 @@
 from apyori import apriori
 import pandas as pd
 
+import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
+
+def assoc_rules(df, min_supp, min_conf):
+    # Convert data to list of lists
+    transactions = []
+    for i in range(len(df)):
+        transactions.append([str(df.values[i, j]) for j in range(len(df.columns))])
+
+    # Run Apriori algorithm
+    te = TransactionEncoder()
+    te_ary = te.fit(transactions).transform(transactions)
+    df = pd.DataFrame(te_ary, columns=te.columns_)
+    frequent_itemsets = apriori(df, min_support=min_supp, use_colnames=True)
+    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=min_conf)
+
+    # Return results
+    return rules
+df = pd.read_csv('./iris.csv')
+rules = assoc_rules(df, 0.1, 0.5) # (2,9)
+rules_df = pd.DataFrame(rules)
+rule_column = rules_df.columns.tolist()
+
+print("ru",rules_df)
+exit(0)
+
 def iris_assoc_rules(file_path, min_supp, min_conf):
     # Load dataset
     data = pd.read_csv(file_path)
@@ -9,7 +36,7 @@ def iris_assoc_rules(file_path, min_supp, min_conf):
     transactions = []
     for i in range(len(data)):
         transactions.append([str(data.values[i, j]) for j in range(len(data.columns))])
-
+        print(transactions)
     # Run Apriori algorithm
     results = list(apriori(transactions, min_support=min_supp, min_confidence=min_conf))
 

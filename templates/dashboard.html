@@ -82,6 +82,8 @@
         border-radius: 5px;
     }
 	</style>
+
+
 {#	<script type="text/javascript">#}
 {#    	$(document).ready(function(){#}
 {##};
@@ -117,7 +119,7 @@
       const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
       {# 很奇怪这个地方，明明只选择了两个特征，length却是5#}
       if (checkboxes.length !== 5) {
-        alert('Please select exactly two items.');
+        alert('Please select exactly 2 items.');
         return false;
       }
       return true;
@@ -136,32 +138,32 @@
 
     	<div class="sidebar-wrapper">
             <div class="logo">
-                <a href="http://www.creative-tim.com" class="simple-text">
-                    Creative Tim
+                <a href="#" class="simple-text">
+                    可拖拽数据分析平台
                 </a>
             </div>
 
             <ul class="nav">
-                <li class="active">
-                    <a href="dashboard.html">
-                        <i class="pe-7s-graph"></i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="user.html">
-                        <i class="pe-7s-user"></i>
-                        <p>User Profile</p>
-                    </a>
-                </li>
-                <li>
+                <li >
                     <a href="/upload/">
                         <i class="pe-7s-note2"></i>
-                        <p>Table List</p>
+                        <p style="font-size: 16px">数 据 预 览</p>
+                    </a>
+                </li>
+                <li  class="active">
+                    <a href="/line_chart/">
+                        <i class="pe-7s-graph"></i>
+                        <p style="font-size: 16px">数 据 图 像 展 示</p>
                     </a>
                 </li>
                 <li>
-                    <a href="typography.html">
+                    <a href="/child/">
+                        <i class="pe-7s-news-paper"></i>
+                        <p style="font-size: 16px">数 据 预 处 理</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/data_analytics/">
                         <i class="pe-7s-news-paper"></i>
                         <p>Typography</p>
                     </a>
@@ -188,7 +190,8 @@
     	</div>
     </div>
     <div class="main-panel">
-        <nav class="navbar navbar-default navbar-fixed">
+        <!-- 头部 -->
+		<nav class="navbar navbar-default navbar-fixed">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example-2">
@@ -197,7 +200,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Dashboard</a>
+                    <a class="navbar-brand" href="#">Table List</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-left">
@@ -210,59 +213,29 @@
                         <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-globe"></i>
-                                    <b class="caret hidden-lg hidden-md"></b>
+{#                                    <b class="caret hidden-sm hidden-xs"></b>#}
+{#                                    <span class="notification hidden-sm hidden-xs">5</span>#}
 									<p class="hidden-lg hidden-md">
-										5 Notifications
-										<b class="caret"></b>
+{#										0 Notifications#}
+{#										<b class="caret"></b>#}
 									</p>
                               </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">Notification 1</a></li>
-                                <li><a href="#">Notification 2</a></li>
-                                <li><a href="#">Notification 3</a></li>
-                                <li><a href="#">Notification 4</a></li>
-                                <li><a href="#">Another notification</a></li>
-                              </ul>
+{#                              <ul class="dropdown-menu">#}
+{#                                <li><a href="#">Notification 1</a></li>#}
+{#                                <li><a href="#">Notification 2</a></li>#}
+{#                                <li><a href="#">Notification 3</a></li>#}
+{#                                <li><a href="#">Notification 4</a></li>#}
+{#                                <li><a href="#">Another notification</a></li>#}
+{#                              </ul>#}
                         </li>
                         <li>
-                           <a href="">
+                           <a href="#">
                                 <i class="fa fa-search"></i>
 								<p class="hidden-lg hidden-md">Search</p>
                             </a>
                         </li>
                     </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                           <a href="">
-                               <p>Account</p>
-                            </a>
-                        </li>
-                        <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <p>
-										Dropdown
-										<b class="caret"></b>
-									</p>
-
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                              </ul>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <p>Log out</p>
-                            </a>
-                        </li>
-						<li class="separator hidden-lg"></li>
-                    </ul>
                 </div>
             </div>
         </nav>

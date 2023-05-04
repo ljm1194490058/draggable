@@ -23,15 +23,22 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     re_path('^$', views.index),
-    path('search/', views.search_datasets, name='search_datasets'),
+
+    path('research/', views.research, name='research'),
+
     path('upload/', views.upload_file, name='upload_file'),
     path('media/<str:filename>/', views.download_file, name='download_file'),
+
     path('line_chart/', views.line_chart, name = 'line_chart'),
     path('sandian/',views.sandian, name = 'sandian'),
+
     path('child/', views.child, name='child'),
     path('upload_process/', views.upload_process, name='upload_process'),
+
     path('data_analytics/', views.data_analytics, name='data_analytics'),
+    path('export_to_word/', views.export_to_word, name='export_to_word'),
 
 
 

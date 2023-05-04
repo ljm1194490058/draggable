@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import base64
 from django.http import JsonResponse
 from io import BytesIO
+from docx import Document
 import kaggle
 import os
 from .forms import MyModelForm
@@ -20,6 +21,11 @@ from django.contrib import messages
 from sklearn.linear_model import LinearRegression
 import seaborn as sns
 import matplotlib.pyplot as plt
+from django.views.decorators.csrf import csrf_exempt
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
 
 # 当前选中的数据集
 select_file = ''
@@ -46,8 +52,8 @@ def child(request):
         if file_extension == 'csv':
             df = pd.read_csv(file)
         elif file_extension == 'txt':
-            file = txt_to_csv(file)
-            df = pd.read_csv(file)
+            df = pd.read_csv(file, delimiter='\t')
+
         else:
             # 读取上传的数据
             df = pd.read_excel(file)
@@ -69,26 +75,19 @@ def child(request):
 
 ###################针对table.html##########################
 # 文本文件转csv文件
-def txt_to_csv(txt_file_path, csv_file_path):
+def txt_to_csv(txt_file_path, csv_file_path=None):
     # 获取TXT文件路径和名称
-    txt_file_name = txt_file_path.split('/')[-1]
-    csv_file_name = txt_file_name.split('.')[0] + '.csv'
-    csv_file_path = txt_file_path.replace(txt_file_name, csv_file_name)
+    if not csv_file_path:
+        txt_file_name = str(txt_file_path)
+        csv_file_name = txt_file_name.split('.')[0] + '.csv'
 
-    # 读取TXT文件数据
-    with open(txt_file_path, 'r') as txtfile:
-        data = txtfile.readlines()
+        # Read the TXT file data into a Pandas DataFrame
+    with open(txt_file_path, 'r') as f:
+        lines = f.readlines()
+    data = [line.strip().split('\t') for line in lines]
+    df = pd.DataFrame(data)
 
-    # 将数据写入CSV文件
-    with open(csv_file_path, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        for line in data:
-            # 分割每行数据，并转换为列表形式
-            row = line.strip().split('\t')
-            writer.writerow(row)
-    print(f'{txt_file_name} has been converted to {csv_file_name}')
-
-    return csv_file_path
+    return df
 
 # 上传文件
 def upload_file(request):
@@ -107,8 +106,7 @@ def upload_file(request):
         if file_extension == 'csv':
             df = pd.read_csv(file)
         elif file_extension == 'txt':
-            file = txt_to_csv(file)
-            df = pd.read_csv(file)
+            df = pd.read_csv(file, delimiter='\t')
         else:
         # 读取上传的数据
             df = pd.read_excel(file)
@@ -208,7 +206,7 @@ def upload_file(request):
     else:
         if select_file != '':
             # 动态获取数据集的键和值
-            columns = select_df.columns.tolist()
+            columns = index_df.columns.tolist()
 
             df = index_df
             # 只取几列进行显示
@@ -315,7 +313,7 @@ def download_file(request, filename):
 def line_chart(request):
     try:
         print('select_file',select_file)
-        df = select_df
+        df = index_df
         # 动态获取数据集的键和值
 
         # 提取每个int特征为列表
@@ -359,58 +357,79 @@ def line_chart(request):
 
 
 
+
 # Create your views here.
-def search_datasets(request):
-    if request.method == 'POST':
-        keyword = request.POST['keyword']
-        url = f'https://www.kaggle.com/datasets?search={keyword}'
+
+research_all_df = pd.DataFrame()
+def research(request):
+    global research_all_df
+    if 'research_all' in request.POST:
+        url = "https://archive.ics.uci.edu/ml/datasets.php"
+        research_df = pd.read_html(url, header=0)[5]
+        research_df = research_df.rename(columns={'Name': 'name'})
+
+        # 发送 HTTP 请求
+        url = 'https://archive.ics.uci.edu/ml/datasets.php'
         response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        datasets = soup.find_all('div', {'class': 'dataset-item'})
-        dataset_info = []
-        for dataset in datasets:
-            name = dataset.find('h3').text.strip()
-            description = dataset.find('p', {'class': 'dataset-item__description'}).text.strip()
-            download_link = dataset.find('a', {'class': 'dataset-item__download-link'})['href']
-            dataset_info.append({'name': name, 'description': description, 'download_link': download_link})
-            print(name, description, download_link)
-        print("datasets", datasets)
-        # Write dataset info to a file
-        filename = f'{keyword}_datasets.txt'
-        with open(filename, 'w') as f:
-            for dataset in dataset_info:
-                f.write(f'{dataset["name"]}\n{dataset["description"]}\n{dataset["download_link"]}\n\n')
 
-        # Return the file as an HTTP response
-        with open(filename, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='text/plain')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
-            # os.remove(filename)  # Remove the file from the server
-            return response
+
+        # 解析 HTML
+        soup = BeautifulSoup(response.text, 'html.parser')
+        df1 = pd.DataFrame(columns=['name', 'href'])
+        # 提取数据集链接
+        datasets = soup.find_all('table', cellpadding='5')[0].find_all('a')
+        for dataset in datasets:
+            name = dataset.text.strip()
+            link = 'https://archive.ics.uci.edu/ml/' + dataset['href']
+            # print(dataset.text, link)
+            if name != '':
+                df1 = df1.append({'name': name, 'href': link}, ignore_index=True)
+        # pd.set_option('display.max_rows', None)
+        # 设置display.max_columns属性为None，以展示所有列
+        # pd.set_option('display.max_columns', None)
+        #
+        # # 将最大列宽设置为-1，以便完全显示每列
+        # pd.set_option('display.max_colwidth', -1)
+        df1 = df1.iloc[7:, ]
+
+        merged_df = pd.merge(research_df, df1, on='name')
+        print("merged_df", merged_df.head())
+        research_all_df = merged_df
+        research_column = merged_df.columns.tolist()
+        research_value = merged_df.values.tolist()
+        return render(request, "research.html", {"df_value":research_value, "df_column":research_column})
+
+    # 查找单个数据
+    elif 'single' in request.POST:
+        name1 = request.POST.get('research_input')
+        #对字符串进行操作
+        name1 = name1.replace('\t', '')
+        name1 = name1.replace('\n', '')
+
+        row_data = research_all_df.loc[research_all_df['name'] == name1]
+        #############[0]就是个神来之笔#################
+        row_data = row_data.values.tolist()[0]
+        print("row",row_data)
+        research_column = research_all_df.columns.tolist()
+        research_value = research_all_df.values.tolist()
+        return render(request, "research.html", {"df_value":research_value, "df_column":research_column, 'row_data':row_data})
     else:
-        keyword = request.GET.get('keyword')
+        research_column = research_all_df.columns.tolist()
+        research_value = research_all_df.values.tolist()
+        return render(request, "research.html", {"df_value":research_value, "df_column":research_column})
 
-        # 使用Kaggle API search命令搜索包含指定关键字的数据集
-        datasets = kaggle.api.datasets_list(search=keyword)
-        print("---"*10)
-        # 遍历符合条件的所有数据集，下载到根目录下的'datasets'文件夹里面
-        for dataset in datasets:
-            if keyword.lower() in dataset.title.lower():
-                print(f"Downloading {dataset.ref}...")
-                os.system(f"kaggle datasets download {dataset.ref} -p datasets")
 
-        return HttpResponse("Data downloaded successfully!")
 
 
 
 def index(request):
-    return render(request, "table.html")
+    return render(request, "research.html")
 
 
 def sandian(request):
     if request.method == 'POST':
         print('select_file', select_file)
-        df = select_df
+        df = index_df
         # 动态获取数据集的键和值
 
         # 提取每个int特征为列表
@@ -440,7 +459,7 @@ def sandian(request):
         #  散点图
         selected_columns = request.POST.getlist('item')
         san_list = []
-        for j, k in zip(select_df[selected_columns[0]], select_df[selected_columns[1]]):
+        for j, k in zip(index_df[selected_columns[0]], index_df[selected_columns[1]]):
             san_list.append([j, k])
 
         context = {
@@ -537,8 +556,11 @@ def data_analytics(request):
 
         # 先把所有的特征名称保留好
         df = processing_df
-        columns = df.columns.tolist()
-        # 这里才开始
+        columns = []
+        for i, col in enumerate(df.columns):
+            if df[col].dtype == 'float' or df[col].dtype == 'int' or df[col].dtype == 'int64':
+                columns.append(col)
+        # 这里才开始 a
         selected_columns = request.POST.getlist('item')
 
         df = df[selected_columns]
@@ -575,60 +597,73 @@ def data_analytics(request):
 
     elif 'huigui' in request.POST:
         df = processing_df
-        columns = df.columns.tolist()
+        columns = []
+        for i, col in enumerate(df.columns):
+            if df[col].dtype == 'float' or df[col].dtype == 'int' or df[col].dtype == 'int64':
+                columns.append(col)
 
         selected_columns = request.POST.getlist('item')
         df = df[selected_columns]
         print("selected_columns——df:", df)
         huigui_x = selected_columns[0]
         g_huigui_x = huigui_x
-        huigui_y = selected_columns[1]
-        g_huigui_y = huigui_y
-            # 创建线性回归模型
-        lr = LinearRegression()
+        if df.shape[1] == 1:
+            error_message = str("所选特征不足!")
+            js_code = f"<script>alert('{error_message}'); window.location.href='/data_analytics';</script>"
+            return HttpResponse(js_code)
 
-        # 拟合模型
-        X = df.iloc[:, 0].values.reshape(-1, 1)
-        y = df.iloc[:, 1].values
-        lr.fit(X, y)
-        # 创建 Figure 对象并设置大小
-        plt.clf()
-        plt.rcParams['font.sans-serif'] = ['SimHei']
-        fig, ax = plt.subplots(figsize=(5, 4))
-        # 绘制回归曲线和散点图
-        sns.regplot(x=X, y=y, data=df)
-        plt.xlabel('X轴特征')
-        plt.ylabel('Y轴特征')
-        plt.title('线性回归图像')
-        xiangguan = lr.coef_.tolist()
-        huigui_xiangguan = xiangguan
-        print("相关系数：", lr.coef_)
 
-        # 图片生成
-        buffer = BytesIO()
-        plt.savefig(buffer)
-        plot_data = buffer.getvalue()
-        imb = base64.b64encode(plot_data)
-        ims = imb.decode()
-        imd = "data:image/png;base64," + ims
-        # 显示图形和相关系数
-        huigui_imd = imd
+        else:
+            huigui_y = selected_columns[1]
+            g_huigui_y = huigui_y
+                # 创建线性回归模型
+            lr = LinearRegression()
 
-        context = {
-            'columns': columns,
-            'xiangguan':xiangguan,
-            "image_path": imd,
-            "huigui_x":huigui_x,
-            "huigui_y":huigui_y,
-            "rule_column": guanlian_column,
-            "rule_df": guanlian_value,
+            # 拟合模型
+            X = df.iloc[:, 0].values.reshape(-1, 1)
+            y = df.iloc[:, 1].values
+            lr.fit(X, y)
+            # 创建 Figure 对象并设置大小
+            plt.clf()
+            plt.rcParams['font.sans-serif'] = ['SimHei']
+            fig, ax = plt.subplots(figsize=(5, 4))
+            # 绘制回归曲线和散点图
+            sns.regplot(x=X, y=y, data=df)
+            plt.xlabel('X轴特征')
+            plt.ylabel('Y轴特征')
+            plt.title('线性回归图像')
+            xiangguan = lr.coef_.tolist()
+            huigui_xiangguan = xiangguan
+            print("相关系数：", lr.coef_)
 
-        }
-        return render(request, 'notifications.html', context)
+            # 图片生成
+            buffer = BytesIO()
+            plt.savefig(buffer)
+            plot_data = buffer.getvalue()
+            imb = base64.b64encode(plot_data)
+            ims = imb.decode()
+            imd = "data:image/png;base64," + ims
+            # 显示图形和相关系数
+            huigui_imd = imd
+
+            context = {
+                'columns': columns,
+                'xiangguan':xiangguan,
+                "image_path": imd,
+                "huigui_x":huigui_x,
+                "huigui_y":huigui_y,
+                "rule_column": guanlian_column,
+                "rule_df": guanlian_value,
+
+            }
+            return render(request, 'notifications.html', context)
 
     elif 'xiangguan' in request.POST:
         df = processing_df
-        columns = df.columns.tolist()
+        columns = []
+        for i, col in enumerate(df.columns):
+            if df[col].dtype == 'float' or df[col].dtype == 'int' or df[col].dtype == 'int64':
+                columns.append(col)
 
         selected_columns = request.POST.getlist('item')
         df = df[selected_columns]
@@ -664,12 +699,6 @@ def data_analytics(request):
 
         context = {
             'columns': columns,
-            "rule_df": guanlian_value,
-            "rule_column": guanlian_column,
-            'xiangguan': huigui_xiangguan,
-            "image_path": huigui_imd,
-            "huigui_x": g_huigui_x,
-            "huigui_y": g_huigui_y,
         }
         return render(request, 'notifications.html', context)
 
@@ -718,7 +747,73 @@ def correlation_analysis(data):
     return plt
 
 
+def export_to_word(request):
+    # 获取要导出的 HTML 内容
+    content = request.POST.get('content')
 
+    # 创建 Word 文档
+    document = Document()
+    section = document.sections[0]
+    section.orientation = 1 # 设置页面方向为纵向
+    section.top_margin = 914400 # 设置页面上边距
+    section.bottom_margin = 914400 # 设置页面下边距
+    section.left_margin = 1143000 # 设置页面左边距
+    section.right_margin = 1143000 # 设置页面右边距
+
+
+    chart1_exists = False
+    chart2_exists = False
+    # 解析 HTML 并将其转换为 Word 文档元素
+    soup = BeautifulSoup(content, 'html.parser')
+    for tag in soup.find_all():
+        if tag.name in ('h1', 'h2', 'h3'):
+            # 添加标题
+            document.add_heading(tag.text, level=int(tag.name[-1]))
+        elif tag.name == 'table':
+            # 添加表格
+            rows = tag.find_all('tr')
+            cols = len(rows[0].find_all('td'))
+            if cols == 0: # 当表格为空时，忽略错误
+                continue
+            table = document.add_table(rows=len(rows), cols=cols)
+            for i, row in enumerate(rows):
+                cells = row.find_all('td')
+                for j, cell in enumerate(cells):
+                    table.cell(i, j).text = cell.text.strip()
+        elif tag.name == 'input':
+            # 忽略 input 标签
+            continue
+
+        elif tag.name == 'div':
+            if tag.get('style') is not None and 'display:none' in tag['style']:
+                continue
+            if tag.get('id') == 'chart':
+                img_data = base64.b64decode(tag.img['src'].split(',')[1])
+                img_buffer = BytesIO(img_data)
+                document.add_picture(img_buffer)
+            if tag.get('id') == 'chart1':
+                try:
+                    img_data = base64.b64decode(tag.img['src'].split(',')[1])
+                    img_buffer = BytesIO(img_data)
+                    document.add_picture(img_buffer)
+                except:
+                    continue
+        else:
+            # 判断文本段落是否可见
+            if tag.get('style') is not None and 'display:none' in tag['style']:
+                continue
+            # 添加文本段落
+            document.add_paragraph(tag.text)
+
+    # 将文档保存为二进制流
+    buffer = BytesIO()
+    document.save(buffer)
+    buffer.seek(0)
+
+    # 返回响应，并设置文件名和文件类型
+    response = HttpResponse(buffer, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="data_analysis_report.docx"'
+    return response
 
 
 
@@ -732,3 +827,4 @@ def correlation_analysis(data):
 # lift: 规则的提升度，表示前提条件的出现会对结论出现的影响程度，如果lift大于1，则表示前提条件出现提高了结论的出现概率，否则减小了结论的出现概率。
 # leverage: 规则的杠杆值，衡量前提条件和结论出现的相关性。
 # conviction: 规则的确信度，衡量前提条件出现与结论未出现之间的相关性。
+

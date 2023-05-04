@@ -117,8 +117,7 @@
 <script type="text/javascript">
     function validateForm() {
       const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
-      {# 很奇怪这个地方，明明只选择了两个特征，length却是5#}
-      if (checkboxes.length !== 5) {
+      if (checkboxes.length !== 2) {
         alert('Please select exactly 2 items.');
         return false;
       }
@@ -145,43 +144,37 @@
 
             <ul class="nav">
                 <li >
+                    <a href="/research/">
+                        <i class="pe-7s-map-marker"></i>
+                        <p style="font-size: 16px">数 据 采 集</p>
+                    </a>
+                </li>
+                <li >
                     <a href="/upload/">
                         <i class="pe-7s-note2"></i>
                         <p style="font-size: 16px">数 据 预 览</p>
                     </a>
                 </li>
-                <li  class="active">
+                <li class="active">
                     <a href="/line_chart/">
                         <i class="pe-7s-graph"></i>
                         <p style="font-size: 16px">数 据 图 像 展 示</p>
                     </a>
                 </li>
-                <li>
+                <li >
                     <a href="/child/">
                         <i class="pe-7s-news-paper"></i>
                         <p style="font-size: 16px">数 据 预 处 理</p>
                     </a>
                 </li>
-                <li>
+                <li >
                     <a href="/data_analytics/">
-                        <i class="pe-7s-news-paper"></i>
-                        <p>Typography</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="icons.html">
                         <i class="pe-7s-science"></i>
-                        <p>Icons</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="notifications.html">
-                        <i class="pe-7s-bell"></i>
-                        <p>Notifications</p>
+                        <p style="font-size: 16px">数 据 分 析</p>
                     </a>
                 </li>
 				<li class="active-pro">
-                    <a href="upgrade.html">
+                    <a href="#">
                         <i class="pe-7s-rocket"></i>
                         <p>Upgrade to PRO</p>
                     </a>
@@ -244,8 +237,8 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
+                    <div class="col-md-6" style="height: 700px">
+                        <div class="card" style="height: 600px">
                             <div class="header">
                                 <h4 class="title">散点图</h4>
                                 <br>
@@ -256,10 +249,9 @@
                                     <input type="submit" value="Submit">
                                     </form>
                             </div>
-                            <div class="content">
-                                <div id="san1" class="ct-chart"></div>
-                                <br>
-                                <div class="footer">
+                            <div class="content" style="height: 520px">
+                                <div id="san1" class="ct-chart" style="height: 500px"></div>
+                                <div style="margin-top: -50px">
                                     <hr>
                                     <div class="stats">
                                         <i class="fa fa-clock-o"></i> 观测特征间的关系
@@ -269,19 +261,15 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="card">
+                    <div class="col-md-6" style="height: 700px">
+                        <div class="card" style="height: 600px">
                             <div class="header">
                                 <h4 class="title">折线图</h4>
                             </div>
-                            <br>
 
-                            <div class="content">
-
-                                <div id="line1" class="ct-chart"></div>
-                                <br>
-                                <br>
-                                <div class="footer">
+                            <div class="content" style="height: 520px">
+                                <div id="line1" class="ct-chart" style="height: 500px"></div>
+                                <div>
                                     <hr>
                                     <div class="stats">
                                         <i class="fa fa-history"></i> 描绘堆叠变量的趋势
@@ -297,6 +285,7 @@
 				echarts_1();
 				echarts_2();
 
+			{#	折线图 #}
 			function echarts_1(){
 				var myChart = echarts.init(document.getElementById('line1'));
 				var line_x = line_data.line_x;
@@ -308,8 +297,8 @@
                 }
                     var	option = {
                     grid: {
-                    width: '100%',
-                    height: '100%',
+                    width: '500px',
+                    height: '300px',
                     left: '10%',
                     top: '10%'
                 },
@@ -357,13 +346,13 @@
         myChart.setOption(option);
 		}
 
-
+    {# 散点图 #}
 	function echarts_2(){
 		var myChart = echarts.init(document.getElementById('san1'));
 		var	option = {
 		    grid: {
-                    width: '80%',
-                    height: '80%',
+                    width: '500px',
+                    height: '350px',
                     left: '10%',
                     top: '10%'
                 },
@@ -409,192 +398,34 @@
 		})
 		</script>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card ">
-                            <div class="header">
-                                <h4 class="title">2014 Sales</h4>
-                                <p class="category">All products including Taxes</p>
-                            </div>
-                            <div class="content">
-                                <div id="chartActivity" class="ct-chart"></div>
-
-                                <div class="footer">
-                                    <div class="legend">
-                                        <i class="fa fa-circle text-info"></i> Tesla Model S
-                                        <i class="fa fa-circle text-danger"></i> BMW 5 Series
-                                    </div>
-                                    <hr>
-                                    <div class="stats">
-                                        <i class="fa fa-check"></i> Data information certified
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card ">
-                            <div class="header">
-                                <h4 class="title">Tasks</h4>
-                                <p class="category">Backend development</p>
-                            </div>
-                            <div class="content">
-                                <div class="table-full-width">
-                                    <table class="table">
-                                        <tbody>
-                                            <tr>
-                                                <td>
-													<div class="checkbox">
-						  							  	<input id="checkbox1" type="checkbox">
-						  							  	<label for="checkbox1"></label>
-					  						  		</div>
-                                                </td>
-                                                <td>Sign contract for "What are conference organizers afraid of?"</td>
-                                                <td class="td-actions text-right">
-                                                    <button type="button" rel="tooltip" title="Edit Task" class="btn btn-info btn-simple btn-xs">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-													<div class="checkbox">
-						  							  	<input id="checkbox2" type="checkbox" checked>
-						  							  	<label for="checkbox2"></label>
-					  						  		</div>
-                                                </td>
-                                                <td>Lines From Great Russian Literature? Or E-mails From My Boss?</td>
-                                                <td class="td-actions text-right">
-                                                    <button type="button" rel="tooltip" title="Edit Task" class="btn btn-info btn-simple btn-xs">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-													<div class="checkbox">
-						  							  	<input id="checkbox3" type="checkbox">
-						  							  	<label for="checkbox3"></label>
-					  						  		</div>
-                                                </td>
-                                                <td>Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit
-												</td>
-                                                <td class="td-actions text-right">
-                                                    <button type="button" rel="tooltip" title="Edit Task" class="btn btn-info btn-simple btn-xs">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-													<div class="checkbox">
-						  							  	<input id="checkbox4" type="checkbox" checked>
-						  							  	<label for="checkbox4"></label>
-					  						  		</div>
-                                                </td>
-                                                <td>Create 4 Invisible User Experiences you Never Knew About</td>
-                                                <td class="td-actions text-right">
-                                                    <button type="button" rel="tooltip" title="Edit Task" class="btn btn-info btn-simple btn-xs">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-													<div class="checkbox">
-						  							  	<input id="checkbox5" type="checkbox">
-						  							  	<label for="checkbox5"></label>
-					  						  		</div>
-                                                </td>
-                                                <td>Read "Following makes Medium better"</td>
-                                                <td class="td-actions text-right">
-                                                    <button type="button" rel="tooltip" title="Edit Task" class="btn btn-info btn-simple btn-xs">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-													<div class="checkbox">
-						  							  	<input id="checkbox6" type="checkbox" checked>
-						  							  	<label for="checkbox6"></label>
-					  						  		</div>
-                                                </td>
-                                                <td>Unfollow 5 enemies from twitter</td>
-                                                <td class="td-actions text-right">
-                                                    <button type="button" rel="tooltip" title="Edit Task" class="btn btn-info btn-simple btn-xs">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div class="footer">
-                                    <hr>
-                                    <div class="stats">
-                                        <i class="fa fa-history"></i> Updated 3 minutes ago
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{#                <div class="row">#}
+{#                    <div class="col-md-12">#}
+{#                        <div class="card ">#}
+{#                            <div class="header">#}
+{#                                <h4 class="title">2014 Sales</h4>#}
+{#                                <p class="category">All products including Taxes</p>#}
+{#                            </div>#}
+{#                            <div class="content">#}
+{#                                <div id="chartActivity" class="ct-chart"></div>#}
+{##}
+{#                                <div class="footer">#}
+{#                                    #}
+{#                                    <hr>#}
+{#                                    <div class="stats">#}
+{#                                        <i class="fa fa-check"></i> Data information #}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{##}
+{##}
+{#                </div>#}
             </div>
         </div>
 
 
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul>
-                        <li>
-                            <a href="#">
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Company
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Portfolio
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                               Blog
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <p class="copyright pull-right">
-                    &copy; <script>document.write(new Date().getFullYear())</script> <a href="http://www.creative-tim.com">Creative Tim</a>, made with love for a better web
-                </p>
-            </div>
-        </footer>
+
 
     </div>
 </div>
